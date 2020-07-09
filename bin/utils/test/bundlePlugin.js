@@ -62,9 +62,7 @@ describe('bundlePlugin', () => {
 
   it('should create ZIP file with automatically determined file name for composer build', () => {
     const result = bundlePlugin('/foo', true, true);
-    expect(result).toStrictEqual(
-      'build/web-stories-foobar-composer.zip'
-    );
+    expect(result).toStrictEqual('build/web-stories-foobar-composer.zip');
     expect(generateZipFile).toHaveBeenCalledWith(
       '/foo/build/web-stories',
       'web-stories-foobar-composer.zip'
