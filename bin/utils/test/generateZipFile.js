@@ -33,7 +33,7 @@ describe('generateZipFile', () => {
       'web-stories-stable.zip'
     );
     expect(execSync).toHaveBeenLastCalledWith(
-      'zip -r web-stories-stable.zip web-stories',
+      'zip -r web-stories-stable.zip /full/path/to/build/web-stories',
       expect.objectContaining({
         cwd: '/full/path/to/build',
       })

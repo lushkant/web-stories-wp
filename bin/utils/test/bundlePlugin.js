@@ -18,13 +18,11 @@
  * External dependencies
  */
 import { __setMockFiles } from 'fs';
-import { execSync } from 'child_process';
 
 /**
  * Internal dependencies
  */
 import bundlePlugin from '../bundlePlugin';
-import copyFiles from '../copyFiles';
 import generateZipFile from '../generateZipFile';
 import getCurrentVersionNumber from '../getCurrentVersionNumber';
 import deleteExistingZipFiles from '../deleteExistingZipFiles';
@@ -32,8 +30,6 @@ import deleteExistingZipFiles from '../deleteExistingZipFiles';
 jest.mock('fs');
 jest.mock('child_process');
 
-jest.mock('../getIgnoredFiles', () => jest.fn(() => ['bar.txt', 'baz/']));
-jest.mock('../copyFiles');
 jest.mock('../generateZipFile');
 jest.mock('../getCurrentVersionNumber');
 jest.mock('../deleteExistingZipFiles');
@@ -55,48 +51,9 @@ describe('bundlePlugin', () => {
     jest.clearAllMocks();
   });
 
-  it('should copy files to build directory', () => {
-    bundlePlugin('/foo');
-    expect(copyFiles).toHaveBeenCalledWith('/foo', 'build/web-stories', [
-      'bar.txt',
-      'baz/',
-    ]);
-  });
-
-  it('should ignore assets folder if using cdn', () => {
-    bundlePlugin('/foo', false, false, false, true);
-    expect(copyFiles).toHaveBeenCalledWith('/foo', 'build/web-stories', [
-      'bar.txt',
-      'baz/',
-      'assets/images/templates/',
-    ]);
-  });
-
-  it('should ignore vendor folder for composer builds', () => {
-    bundlePlugin('/foo', true);
-    expect(copyFiles).toHaveBeenCalledWith('/foo', 'build/web-stories', [
-      'bar.txt',
-      'baz/',
-      'vendor/',
-    ]);
-  });
-
-  it('should run composer update for non-composer builds', () => {
-    const result = bundlePlugin('/foo', false);
-    expect(result).toStrictEqual('build/web-stories');
-    expect(execSync).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining('composer update --no-dev')
-    );
-    expect(execSync).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('composer update')
-    );
-  });
-
   it('should create ZIP file with automatically determined file name', () => {
     const result = bundlePlugin('/foo', false, true);
-    expect(result).toStrictEqual('build/web-stories/web-stories-foobar.zip');
+    expect(result).toStrictEqual('build/web-stories-foobar.zip');
     expect(generateZipFile).toHaveBeenCalledWith(
       '/foo/build/web-stories',
       'web-stories-foobar.zip'
@@ -106,7 +63,7 @@ describe('bundlePlugin', () => {
   it('should create ZIP file with automatically determined file name for composer build', () => {
     const result = bundlePlugin('/foo', true, true);
     expect(result).toStrictEqual(
-      'build/web-stories/web-stories-foobar-composer.zip'
+      'build/web-stories-foobar-composer.zip'
     );
     expect(generateZipFile).toHaveBeenCalledWith(
       '/foo/build/web-stories',
@@ -116,7 +73,7 @@ describe('bundlePlugin', () => {
 
   it('should create ZIP file with custom file name', () => {
     const result = bundlePlugin('/foo', false, 'my-plugin.zip');
-    expect(result).toStrictEqual('build/web-stories/my-plugin.zip');
+    expect(result).toStrictEqual('build/my-plugin.zip');
     expect(generateZipFile).toHaveBeenCalledWith(
       '/foo/build/web-stories',
       'my-plugin.zip'

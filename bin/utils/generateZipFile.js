@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import { dirname, basename } from 'path';
+import { dirname } from 'path';
 import { execSync } from 'child_process';
 
 /**
@@ -25,14 +25,13 @@ import { execSync } from 'child_process';
  *
  * Ensures the folder in the final ZIP file is always named "web-stories".
  *
- * @param {string} source Full path to the source directory that should be zipped.
+ * @param {string} source Full path to the directory that should be zipped.
  * @param {string} zipName Desired file name.
  */
 function generateZipFile(source, zipName) {
-  const pluginFolder = basename(source); // web-stories
   const cwd = dirname(source); // /full/path/to/build
 
-  execSync(`zip -r ${zipName} ${pluginFolder}`, {
+  execSync(`zip -r ${zipName} ${source}`, {
     cwd,
     stdio: ['pipe', 'pipe', 'ignore'],
   });
