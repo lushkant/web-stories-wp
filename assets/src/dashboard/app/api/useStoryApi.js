@@ -35,6 +35,7 @@ import {
   STORY_SORT_OPTIONS,
   ORDER_BY_SORT,
   STORIES_PER_REQUEST,
+  STORY_STATUS,
 } from '../../constants';
 import { migrate, DATA_VERSION } from '../../../edit-story/migration/migrate';
 import storyReducer, {
@@ -148,7 +149,12 @@ const useStoryApi = (dataAdapter, { editStoryURL, storyApi }) => {
           payload: {
             stories: reshapedStories,
             totalPages,
-            totalStoriesByStatus,
+            totalStoriesByStatus: {
+              ...totalStoriesByStatus,
+              [STORY_STATUS.PUBLISHED_AND_FUTURE]:
+                totalStoriesByStatus[STORY_STATUS.PUBLISH] +
+                totalStoriesByStatus[STORY_STATUS.FUTURE],
+            },
             page,
           },
         });
